@@ -8,16 +8,16 @@ import android.support.v7.widget.RecyclerView;
  */
 public class LinearLayoutOrientationProvider implements OrientationProvider {
 
-  @Override
-  public int getOrientation(RecyclerView recyclerView) {
-    RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
+    @Override
+    public int getOrientation(RecyclerView recyclerView) {
+        RecyclerView.LayoutManager layoutManager = recyclerView.getLayoutManager();
 
-    if (layoutManager instanceof LinearLayoutManager) {
-      return ((LinearLayoutManager) layoutManager).getOrientation();
-    } else {
-      throw new IllegalStateException("StickyListHeadersDecoration can only be used with a " +
-          "LinearLayoutManager.");
+        if (layoutManager instanceof LinearLayoutManager) {
+            return ((LinearLayoutManager) layoutManager).getOrientation();
+        } else {
+            throw new IllegalStateException("StickyListHeadersDecoration can only be used with a " +
+                    "LinearLayoutManager.");
+        }
     }
-  }
 
 }
