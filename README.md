@@ -16,7 +16,7 @@ Here is a quick video of it in action (click to see the full video):
 Download
 --------
 
-    compile 'com.timehop.stickyheadersrecyclerview:library:0.4.1@aar'
+    compile 'com.github.smartcanvas:sticky-headers-recyclerview:0.5'
 
 Usage
 -----
@@ -96,6 +96,8 @@ Known Issues
 
 Version History
 ---------------
+0.5 (8/20/2015) - Added position change listener
+
 0.4.1 (6/24/2015) - Fix "dancing headers" by DarkJaguar91
 
 0.4.0 (4/16/2015) - Code reorganization by danoz73, fixes for different sized headers, performance improvements
