@@ -23,12 +23,16 @@ public class StickyRecyclerHeadersDecoration extends RecyclerView.ItemDecoration
     private final HeaderPositionCalculator mHeaderPositionCalculator;
     private final HeaderRenderer mRenderer;
     private final DimensionCalculator mDimensionCalculator;
+
     /**
      * The following field is used as a buffer for internal calculations. Its sole purpose is to avoid
      * allocating new Rect every time we need one.
      */
     private final Rect mTempRect = new Rect();
+
     private StickyRecyclerHeadersPositionChangeListener mHeaderListener;
+
+    private boolean mEnableStickyHeader = true;
 
     // TODO: Consider passing in orientation to simplify orientation accounting within calculation
     public StickyRecyclerHeadersDecoration(StickyRecyclerHeadersAdapter adapter) {
@@ -113,10 +117,11 @@ public class StickyRecyclerHeadersDecoration extends RecyclerView.ItemDecoration
                     headerOffset = new Rect();
                     mHeaderRects.put(position, headerOffset);
                 }
-                mHeaderPositionCalculator.initHeaderBounds(headerOffset, parent, header, itemView, hasStickyHeader);
+
+                mHeaderPositionCalculator.initHeaderBounds(headerOffset, parent, header, itemView, hasStickyHeader, mEnableStickyHeader);
                 mRenderer.drawHeader(parent, canvas, header, headerOffset);
 
-                if (mHeaderListener != null) {
+                if (mEnableStickyHeader && mHeaderListener != null) {
                     mHeaderListener.onHeaderPositionChanged(mAdapter.getHeaderId(position), header, position, headerOffset);
                 }
             }
@@ -168,6 +173,14 @@ public class StickyRecyclerHeadersDecoration extends RecyclerView.ItemDecoration
      */
     public void invalidateHeaders() {
         mHeaderProvider.invalidate();
+    }
+
+    public void enableStickyHeaders(boolean enableStickyHeaders) {
+        this.mEnableStickyHeader = enableStickyHeaders;
+    }
+
+    public boolean isStickyHeadersEnabled() {
+        return this.mEnableStickyHeader;
     }
 
     public void setHeaderPositionListener(StickyRecyclerHeadersPositionChangeListener headerListener) {

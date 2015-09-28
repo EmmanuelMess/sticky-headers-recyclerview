@@ -110,11 +110,11 @@ public class HeaderPositionCalculator {
         return false;
     }
 
-    public void initHeaderBounds(Rect bounds, RecyclerView recyclerView, View header, View firstView, boolean firstHeader) {
+    public void initHeaderBounds(Rect bounds, RecyclerView recyclerView, View header, View firstView, boolean firstHeader, boolean enableStickyHeader) {
         int orientation = mOrientationProvider.getOrientation(recyclerView);
-        initDefaultHeaderOffset(bounds, recyclerView, header, firstView, orientation);
+        initDefaultHeaderOffset(bounds, recyclerView, header, firstView, orientation, enableStickyHeader);
 
-        if (firstHeader && isStickyHeaderBeingPushedOffscreen(recyclerView, header)) {
+        if (enableStickyHeader && firstHeader && isStickyHeaderBeingPushedOffscreen(recyclerView, header)) {
             View viewAfterNextHeader = getFirstViewUnobscuredByHeader(recyclerView, header);
             int firstViewUnderHeaderPosition = recyclerView.getChildAdapterPosition(viewAfterNextHeader);
             View secondHeader = mHeaderProvider.getHeader(recyclerView, firstViewUnderHeaderPosition);
@@ -123,19 +123,19 @@ public class HeaderPositionCalculator {
         }
     }
 
-    private void initDefaultHeaderOffset(Rect headerMargins, RecyclerView recyclerView, View header, View firstView, int orientation) {
+    private void initDefaultHeaderOffset(Rect headerMargins, RecyclerView recyclerView, View header, View firstView, int orientation, boolean enableStickyHeader) {
         int translationX, translationY;
         mDimensionCalculator.initMargins(mTempRect1, header);
         if (orientation == LinearLayoutManager.VERTICAL) {
             translationX = firstView.getLeft() + mTempRect1.left;
-            translationY = Math.max(
-                    firstView.getTop() - header.getHeight() - mTempRect1.bottom,
-                    getListTop(recyclerView) + mTempRect1.top);
+            translationY = enableStickyHeader ?
+                    Math.max(firstView.getTop() - header.getHeight() - mTempRect1.bottom, getListTop(recyclerView) + mTempRect1.top) :
+                    firstView.getTop() - header.getHeight() - mTempRect1.bottom;
         } else {
             translationY = firstView.getTop() + mTempRect1.top;
-            translationX = Math.max(
-                    firstView.getLeft() - header.getWidth() - mTempRect1.right,
-                    getListLeft(recyclerView) + mTempRect1.left);
+            translationX = enableStickyHeader ?
+                    Math.max(firstView.getLeft() - header.getWidth() - mTempRect1.right, getListLeft(recyclerView) + mTempRect1.left) :
+                    firstView.getLeft() - header.getWidth() - mTempRect1.right;
         }
 
         headerMargins.set(translationX, translationY, translationX + header.getWidth(),
