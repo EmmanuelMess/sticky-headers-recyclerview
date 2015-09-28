@@ -16,7 +16,7 @@ Here is a quick video of it in action (click to see the full video):
 Download
 --------
 
-    compile 'com.github.smartcanvas:sticky-headers-recyclerview:0.5'
+    compile 'com.github.smartcanvas:sticky-headers-recyclerview:0.5.0'
 
 Usage
 -----
@@ -94,9 +94,13 @@ Known Issues
 
 * I haven't tested this with ItemAnimators yet.
 
+* The header views are drawn to a canvas, and are not actually a part of the view hierarchy. As such, they can't have touch states, and you may run into issues if you try to load images into them asynchronously.
+
 Version History
 ---------------
 0.5 (8/20/2015) - Added position change listener
+
+0.4.2 (8/21/2015) - Add support for reverse `ReverseLayout` in `LinearLayoutManager` by [AntonPukhonin](https://github.com/AntonPukhonin)
 
 0.4.1 (6/24/2015) - Fix "dancing headers" by DarkJaguar91
 
