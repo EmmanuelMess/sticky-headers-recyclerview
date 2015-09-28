@@ -16,7 +16,7 @@ Here is a quick video of it in action (click to see the full video):
 Download
 --------
 
-    compile 'com.github.smartcanvas:sticky-headers-recyclerview:0.5.0'
+    compile 'com.github.smartcanvas:sticky-headers-recyclerview:0.5.1'
 
 Usage
 -----
