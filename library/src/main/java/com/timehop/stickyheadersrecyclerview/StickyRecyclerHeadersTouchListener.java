@@ -9,24 +9,26 @@ import android.view.View;
 public class StickyRecyclerHeadersTouchListener implements RecyclerView.OnItemTouchListener {
     private final GestureDetector mTapDetector;
     private final RecyclerView mRecyclerView;
+    private final StickyRecyclerHeadersAdapter mAdapter;
     private final StickyRecyclerHeadersDecoration mDecor;
     private OnHeaderClickListener mOnHeaderClickListener;
 
     public StickyRecyclerHeadersTouchListener(final RecyclerView recyclerView,
                                               final StickyRecyclerHeadersDecoration decor) {
+        this(recyclerView, (StickyRecyclerHeadersAdapter) recyclerView.getAdapter(), decor);
+    }
+
+    public StickyRecyclerHeadersTouchListener(final RecyclerView recyclerView,
+                                              final StickyRecyclerHeadersAdapter adapter,
+                                              final StickyRecyclerHeadersDecoration decor) {
         mTapDetector = new GestureDetector(recyclerView.getContext(), new SingleTapDetector());
         mRecyclerView = recyclerView;
+        mAdapter = adapter;
         mDecor = decor;
     }
 
     public StickyRecyclerHeadersAdapter getAdapter() {
-        if (mRecyclerView.getAdapter() instanceof StickyRecyclerHeadersAdapter) {
-            return (StickyRecyclerHeadersAdapter) mRecyclerView.getAdapter();
-        } else {
-            throw new IllegalStateException("A RecyclerView with " +
-                    StickyRecyclerHeadersTouchListener.class.getSimpleName() +
-                    " requires a " + StickyRecyclerHeadersAdapter.class.getSimpleName());
-        }
+        return mAdapter;
     }
 
     public void setOnHeaderClickListener(OnHeaderClickListener listener) {
