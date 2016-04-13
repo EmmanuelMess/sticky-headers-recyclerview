@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity {
     recyclerView.setLayoutManager(layoutManager);
 
     // Add the sticky headers decoration
-    final StickyRecyclerHeadersDecoration headersDecor = new StickyRecyclerHeadersDecoration(adapter);
+    final StickyRecyclerHeadersDecoration headersDecor = new StickyRecyclerHeadersDecoration(adapter, true);
     recyclerView.addItemDecoration(headersDecor);
 
     headersDecor.setHeaderPositionListener(new StickyRecyclerHeadersPositionChangeListener() {

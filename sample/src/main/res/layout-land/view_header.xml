@@ -23,6 +23,7 @@
         android:layout_width="4dp"
         android:layout_height="match_parent"
         android:alpha="0.64"
-        android:background="@drawable/shadow_vertical" />
+        android:background="@drawable/shadow_vertical"
+        android:visibility="invisible" />
 
 </LinearLayout>
