@@ -15,7 +15,7 @@ import com.timehop.stickyheadersrecyclerview.caching.HeaderProvider;
 import com.timehop.stickyheadersrecyclerview.caching.HeaderViewCache;
 import com.timehop.stickyheadersrecyclerview.calculation.DimensionCalculator;
 import com.timehop.stickyheadersrecyclerview.rendering.HeaderRenderer;
-import com.timehop.stickyheadersrecyclerview.util.LinearLayoutOrientationProvider;
+import com.timehop.stickyheadersrecyclerview.util.LayoutManagerOrientationProvider;
 import com.timehop.stickyheadersrecyclerview.util.OrientationProvider;
 
 public class StickyRecyclerHeadersDecoration extends RecyclerView.ItemDecoration {
@@ -39,11 +39,11 @@ public class StickyRecyclerHeadersDecoration extends RecyclerView.ItemDecoration
   private final Rect mTempRect = new Rect();
 
   public StickyRecyclerHeadersDecoration(StickyRecyclerHeadersAdapter adapter) {
-    this(adapter, new LinearLayoutOrientationProvider(), new DimensionCalculator(), true);
+    this(adapter, new LayoutManagerOrientationProvider(), new DimensionCalculator(), true);
   }
 
   public StickyRecyclerHeadersDecoration(StickyRecyclerHeadersAdapter adapter, boolean enableStickyHeader) {
-    this(adapter, new LinearLayoutOrientationProvider(), new DimensionCalculator(), enableStickyHeader);
+    this(adapter, new LayoutManagerOrientationProvider(), new DimensionCalculator(), enableStickyHeader);
   }
 
   private StickyRecyclerHeadersDecoration(StickyRecyclerHeadersAdapter adapter, OrientationProvider orientationProvider, DimensionCalculator dimensionCalculator, boolean enableStickyHeader) {

@@ -9,6 +9,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.View;
 
+import com.timehop.stickyheadersrecyclerview.util.LayoutManagerOrientationProvider;
+
 
 public class DividerDecoration extends RecyclerView.ItemDecoration {
 
@@ -29,14 +31,7 @@ public class DividerDecoration extends RecyclerView.ItemDecoration {
   }
 
   private int getOrientation(RecyclerView parent) {
-    LinearLayoutManager layoutManager;
-    try {
-      layoutManager = (LinearLayoutManager) parent.getLayoutManager();
-    } catch (ClassCastException e) {
-      throw new IllegalStateException("DividerDecoration can only be used with a " +
-          "LinearLayoutManager.", e);
-    }
-    return layoutManager.getOrientation();
+    return LayoutManagerOrientationProvider.getRecyclerViewOrientation(parent);
   }
 
   @Override
@@ -58,8 +53,7 @@ public class DividerDecoration extends RecyclerView.ItemDecoration {
     final int childCount = parent.getChildCount();
     for (int i = 0; i < childCount; i++) {
       final View child = parent.getChildAt(i);
-      final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child
-          .getLayoutParams();
+      final RecyclerView.LayoutParams params = (RecyclerView.LayoutParams) child.getLayoutParams();
       final int top = Math.max(recyclerViewTop, child.getBottom() + params.bottomMargin);
       final int bottom = Math.min(recyclerViewBottom, top + mDivider.getIntrinsicHeight());
       mDivider.setBounds(left, top, right, bottom);

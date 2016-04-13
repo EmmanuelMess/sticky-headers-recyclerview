@@ -8,9 +8,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -68,7 +68,8 @@ public class MainActivity extends AppCompatActivity {
 
     // Set layout manager
     int orientation = getLayoutManagerOrientation(getResources().getConfiguration().orientation);
-    final GridLayoutManager layoutManager = new GridLayoutManager(this, NUM_COLUMNS, orientation, isReverseButton.isChecked());
+    final StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(NUM_COLUMNS, orientation);
+    layoutManager.setReverseLayout(isReverseButton.isChecked());
     recyclerView.setLayoutManager(layoutManager);
 
     // Add the sticky headers decoration
