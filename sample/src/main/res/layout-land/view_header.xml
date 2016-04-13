@@ -1,15 +1,28 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<TextView
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:layout_width="wrap_content"
-    android:layout_height="match_parent"
-    android:padding="@dimen/small"
-    android:background="#001F3F"
-    android:textSize="24sp"
-    android:textColor="@android:color/white"
-    android:gravity="center_vertical"
-    tools:text="Animals starting with A"
-    tools:context=".MainActivity"/>
+    tools:context=".MainActivity">
+
+    <TextView
+        android:id="@+id/header_text"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="@dimen/small"
+        android:textColor="@android:color/white"
+        android:textSize="24sp"
+        tools:text="Animals starting with A" />
+
+    <View
+        android:id="@+id/header_shadow"
+        android:layout_width="4dp"
+        android:layout_height="match_parent"
+        android:alpha="0.64"
+        android:background="@drawable/shadow_vertical" />
+
+</LinearLayout>

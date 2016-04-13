@@ -24,6 +24,7 @@ public class StickyRecyclerHeadersDecoration extends RecyclerView.ItemDecoration
   private final HeaderPositionCalculator mHeaderPositionCalculator;
   private final HeaderRenderer mRenderer;
   private final DimensionCalculator mDimensionCalculator;
+  private StickyRecyclerHeadersPositionChangeListener mHeaderListener;
 
   /**
    * The following field is used as a buffer for internal calculations. Its sole purpose is to avoid
@@ -121,8 +122,22 @@ public class StickyRecyclerHeadersDecoration extends RecyclerView.ItemDecoration
         }
         mHeaderPositionCalculator.initHeaderBounds(headerOffset, parent, header, itemView, hasStickyHeader);
         mRenderer.drawHeader(parent, canvas, header, headerOffset);
+
+        if (mHeaderListener != null) {
+          mHeaderListener.onHeaderPositionChanged(this, mAdapter.getHeaderId(position), header, position, headerOffset);
+        }
       }
     }
+  }
+
+  /**
+   * Verify if header obscure some item on RecyclerView
+   *
+   * @param header The header to verify
+   * @return first item that is fully beneath a header
+   */
+  public boolean headerObscuringSomeItem(RecyclerView recyclerView, View header) {
+    return mHeaderPositionCalculator.headerObscuringSomeItem(recyclerView, header);
   }
 
   /**
@@ -164,5 +179,9 @@ public class StickyRecyclerHeadersDecoration extends RecyclerView.ItemDecoration
   public void invalidateHeaders() {
     mHeaderProvider.invalidate();
     mHeaderRects.clear();
+  }
+
+  public void setHeaderPositionListener(StickyRecyclerHeadersPositionChangeListener headerListener) {
+    this.mHeaderListener = headerListener;
   }
 }

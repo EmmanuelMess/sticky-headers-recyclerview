@@ -1,13 +1,16 @@
 package com.timehop.stickyheadersrecyclerview.sample;
 
 import android.content.pm.ActivityInfo;
+import android.content.res.Resources;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,6 +21,7 @@ import android.widget.ToggleButton;
 
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersAdapter;
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration;
+import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersPositionChangeListener;
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersTouchListener;
 
 import java.security.SecureRandom;
@@ -64,6 +68,18 @@ public class MainActivity extends AppCompatActivity {
     // Add the sticky headers decoration
     final StickyRecyclerHeadersDecoration headersDecor = new StickyRecyclerHeadersDecoration(adapter);
     recyclerView.addItemDecoration(headersDecor);
+
+    headersDecor.setHeaderPositionListener(new StickyRecyclerHeadersPositionChangeListener() {
+      @Override
+      public void onHeaderPositionChanged(StickyRecyclerHeadersDecoration decor, long headerId, View header, int position, Rect headerRect) {
+        boolean headerIsOnTop = header != null && headerRect != null && headerRect.top <= (16 * Resources.getSystem().getDisplayMetrics().density);
+        boolean headerIsObscuringSomeView = headerIsOnTop && decor.headerObscuringSomeItem(recyclerView, header);
+
+        Log.i(MainActivity.class.getSimpleName(), String.format("ON_TOP: %s | OBSCURING_SOME_VIEW: %s", headerIsOnTop, headerIsObscuringSomeView));
+
+        header.findViewById(R.id.header_shadow).setVisibility(headerIsObscuringSomeView ? View.VISIBLE : View.INVISIBLE);
+      }
+    });
 
     // Add decoration for dividers between list items
     recyclerView.addItemDecoration(new DividerDecoration(this));
@@ -151,8 +167,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBindHeaderViewHolder(RecyclerView.ViewHolder holder, int position) {
-      TextView textView = (TextView) holder.itemView;
+      TextView textView = (TextView) holder.itemView.findViewById(R.id.header_text);
       textView.setText(String.valueOf(getItem(position).charAt(0)));
+
       holder.itemView.setBackgroundColor(getRandomColor());
     }
 
@@ -162,6 +179,5 @@ public class MainActivity extends AppCompatActivity {
           rgen.nextInt(359), 1, 1
       });
     }
-
   }
 }

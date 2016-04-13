@@ -94,6 +94,22 @@ public class HeaderPositionCalculator {
     return position < 0 || position >= mAdapter.getItemCount();
   }
 
+  /**
+   * Verify if header obscure some item on RecyclerView
+   *
+   * @param parent RecyclerView containing all the list items
+   * @return first item that is fully beneath a header
+   */
+  public boolean headerObscuringSomeItem(RecyclerView parent, View firstHeader) {
+    for (int i = 0; i < parent.getChildCount(); i++) {
+      View child = parent.getChildAt(i);
+      if (itemIsObscuredByHeader(parent, child, firstHeader, mOrientationProvider.getOrientation(parent))) {
+          return true;
+      }
+    }
+    return false;
+  }
+
   public void initHeaderBounds(Rect bounds, RecyclerView recyclerView, View header, View firstView, boolean firstHeader) {
     int orientation = mOrientationProvider.getOrientation(recyclerView);
     initDefaultHeaderOffset(bounds, recyclerView, header, firstView, orientation);
