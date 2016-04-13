@@ -21,7 +21,6 @@ import com.timehop.stickyheadersrecyclerview.util.OrientationProvider;
 public class StickyRecyclerHeadersDecoration extends RecyclerView.ItemDecoration {
 
   private final StickyRecyclerHeadersAdapter mAdapter;
-  private final ItemVisibilityAdapter mVisibilityAdapter;
   private final SparseArray<Rect> mHeaderRects = new SparseArray<>();
   private final HeaderProvider mHeaderProvider;
   private final OrientationProvider mOrientationProvider;
@@ -30,6 +29,7 @@ public class StickyRecyclerHeadersDecoration extends RecyclerView.ItemDecoration
   private final DimensionCalculator mDimensionCalculator;
   private final boolean mEnableStickyHeader;
 
+  private ItemVisibilityAdapter mVisibilityAdapter;
   private StickyRecyclerHeadersPositionChangeListener mHeaderListener;
 
   /**
@@ -39,40 +39,28 @@ public class StickyRecyclerHeadersDecoration extends RecyclerView.ItemDecoration
   private final Rect mTempRect = new Rect();
 
   public StickyRecyclerHeadersDecoration(StickyRecyclerHeadersAdapter adapter) {
-    this(adapter, new LinearLayoutOrientationProvider(), new DimensionCalculator(), null, true);
+    this(adapter, new LinearLayoutOrientationProvider(), new DimensionCalculator(), true);
   }
 
   public StickyRecyclerHeadersDecoration(StickyRecyclerHeadersAdapter adapter, boolean enableStickyHeader) {
-    this(adapter, new LinearLayoutOrientationProvider(), new DimensionCalculator(), null, enableStickyHeader);
+    this(adapter, new LinearLayoutOrientationProvider(), new DimensionCalculator(), enableStickyHeader);
   }
 
-  public StickyRecyclerHeadersDecoration(StickyRecyclerHeadersAdapter adapter, ItemVisibilityAdapter visibilityAdapter, boolean enableStickyHeader) {
-    this(adapter, new LinearLayoutOrientationProvider(), new DimensionCalculator(), visibilityAdapter, enableStickyHeader);
+  private StickyRecyclerHeadersDecoration(StickyRecyclerHeadersAdapter adapter, OrientationProvider orientationProvider, DimensionCalculator dimensionCalculator, boolean enableStickyHeader) {
+    this(adapter, orientationProvider, dimensionCalculator, new HeaderRenderer(orientationProvider), new HeaderViewCache(adapter, orientationProvider), enableStickyHeader);
   }
 
-  private StickyRecyclerHeadersDecoration(StickyRecyclerHeadersAdapter adapter, OrientationProvider orientationProvider,
-                                                DimensionCalculator dimensionCalculator, ItemVisibilityAdapter visibilityAdapter, boolean enableStickyHeader) {
-    this(adapter, orientationProvider, dimensionCalculator, new HeaderRenderer(orientationProvider),
-            new HeaderViewCache(adapter, orientationProvider), visibilityAdapter, enableStickyHeader);
+  private StickyRecyclerHeadersDecoration(StickyRecyclerHeadersAdapter adapter, OrientationProvider orientationProvider, DimensionCalculator dimensionCalculator, HeaderRenderer headerRenderer, HeaderProvider headerProvider, boolean enableStickyHeader) {
+    this(adapter, headerRenderer, orientationProvider, dimensionCalculator, headerProvider, new HeaderPositionCalculator(adapter, headerProvider, orientationProvider, dimensionCalculator), enableStickyHeader);
   }
 
-  private StickyRecyclerHeadersDecoration(StickyRecyclerHeadersAdapter adapter, OrientationProvider orientationProvider,
-                                                DimensionCalculator dimensionCalculator, HeaderRenderer headerRenderer, HeaderProvider headerProvider, ItemVisibilityAdapter visibilityAdapter, boolean enableStickyHeader) {
-    this(adapter, headerRenderer, orientationProvider, dimensionCalculator, headerProvider,
-            new HeaderPositionCalculator(adapter, headerProvider, orientationProvider,
-                    dimensionCalculator), visibilityAdapter, enableStickyHeader);
-  }
-
-  private StickyRecyclerHeadersDecoration(StickyRecyclerHeadersAdapter adapter, HeaderRenderer headerRenderer,
-                                                OrientationProvider orientationProvider, DimensionCalculator dimensionCalculator, HeaderProvider headerProvider,
-                                                HeaderPositionCalculator headerPositionCalculator, ItemVisibilityAdapter visibilityAdapter, boolean enableStickyHeader) {
+  private StickyRecyclerHeadersDecoration(StickyRecyclerHeadersAdapter adapter, HeaderRenderer headerRenderer, OrientationProvider orientationProvider, DimensionCalculator dimensionCalculator, HeaderProvider headerProvider, HeaderPositionCalculator headerPositionCalculator, boolean enableStickyHeader) {
     mAdapter = adapter;
     mHeaderProvider = headerProvider;
     mOrientationProvider = orientationProvider;
     mRenderer = headerRenderer;
     mDimensionCalculator = dimensionCalculator;
     mHeaderPositionCalculator = headerPositionCalculator;
-    mVisibilityAdapter = visibilityAdapter;
     mEnableStickyHeader = enableStickyHeader;
   }
 
@@ -116,20 +104,24 @@ public class StickyRecyclerHeadersDecoration extends RecyclerView.ItemDecoration
 
     for (int i = 0; i < childCount; i++) {
       View itemView = parent.getChildAt(i);
+
       int position = parent.getChildAdapterPosition(itemView);
-      if (position == RecyclerView.NO_POSITION) {
+
+      if (position == RecyclerView.NO_POSITION || position % mAdapter.getNumColumns() > 0) {
         continue;
       }
 
       boolean hasStickyHeader = mHeaderPositionCalculator.hasStickyHeader(itemView, mOrientationProvider.getOrientation(parent), position);
       if (hasStickyHeader || mHeaderPositionCalculator.hasNewHeader(position, mOrientationProvider.isReverseLayout(parent))) {
         View header = mHeaderProvider.getHeader(parent, position);
+
         //re-use existing Rect, if any.
         Rect headerOffset = mHeaderRects.get(position);
         if (headerOffset == null) {
           headerOffset = new Rect();
           mHeaderRects.put(position, headerOffset);
         }
+
         mHeaderPositionCalculator.initHeaderBounds(headerOffset, parent, header, itemView, hasStickyHeader, mEnableStickyHeader);
         mRenderer.drawHeader(parent, canvas, header, headerOffset);
 
@@ -189,6 +181,10 @@ public class StickyRecyclerHeadersDecoration extends RecyclerView.ItemDecoration
   public void invalidateHeaders() {
     mHeaderProvider.invalidate();
     mHeaderRects.clear();
+  }
+
+  public void setVisibilityAdapter(ItemVisibilityAdapter visibilityAdapter) {
+    this.mVisibilityAdapter = visibilityAdapter;
   }
 
   public void setHeaderPositionListener(StickyRecyclerHeadersPositionChangeListener headerListener) {

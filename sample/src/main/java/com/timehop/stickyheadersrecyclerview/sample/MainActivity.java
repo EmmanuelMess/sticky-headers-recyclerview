@@ -11,6 +11,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,11 +30,12 @@ import java.security.SecureRandom;
 
 public class MainActivity extends AppCompatActivity {
 
-  public static final int NUM_COLUMNS = 1;
+  public static final int NUM_COLUMNS = 2;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
     super.onCreate(savedInstanceState);
+
     setContentView(R.layout.activity_main);
 
     final RecyclerView recyclerView = (RecyclerView) findViewById(R.id.recyclerview);
@@ -42,7 +44,6 @@ public class MainActivity extends AppCompatActivity {
 
     // Set adapter populated with example dummy data
     final AnimalsHeadersAdapter adapter = new AnimalsHeadersAdapter();
-    adapter.add("List of Animals");
     adapter.addAll(getDummyDataSet());
     recyclerView.setAdapter(adapter);
 
@@ -51,8 +52,10 @@ public class MainActivity extends AppCompatActivity {
       @Override
       public void onClick(View v) {
         Handler handler = new Handler(Looper.getMainLooper());
+
         for (int i = 0; i < adapter.getItemCount(); i++) {
           final int index = i;
+
           handler.postDelayed(new Runnable() {
             @Override
             public void run() {
@@ -135,8 +138,10 @@ public class MainActivity extends AppCompatActivity {
     }
   }
 
-  private class AnimalsHeadersAdapter extends AnimalsAdapter<RecyclerView.ViewHolder>
-      implements StickyRecyclerHeadersAdapter<RecyclerView.ViewHolder> {
+  private class AnimalsHeadersAdapter extends AnimalsAdapter<RecyclerView.ViewHolder> implements StickyRecyclerHeadersAdapter<RecyclerView.ViewHolder> {
+
+    private static final String EMPTY_NAME = " ";
+
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
       View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_item, parent, false);
@@ -152,10 +157,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public long getHeaderId(int position) {
-      if (position == 0) {
-        return -1;
+      int numColumnOfItem = position % getNumColumns();
+      if (numColumnOfItem == 0) {
+          return getFirstChar(getItem(position));
       } else {
-        return getItem(position).charAt(0);
+          return getHeaderId(position - numColumnOfItem);
       }
     }
 
@@ -174,11 +180,61 @@ public class MainActivity extends AppCompatActivity {
       holder.itemView.setBackgroundColor(getRandomColor());
     }
 
+    @Override
+    public int getNumColumns() {
+      return NUM_COLUMNS;
+    }
+
+    @Override
+    public void updateAdapter() {
+      reorderItems();
+
+      super.updateAdapter();
+    }
+
     private int getRandomColor() {
       SecureRandom rgen = new SecureRandom();
       return Color.HSVToColor(150, new float[]{
           rgen.nextInt(359), 1, 1
       });
+    }
+
+    private void reorderItems() {
+      long firstCharOnLastItem = -1;
+
+      for (int i = 0; i < items.size(); i++) {
+        String item = items.get(i);
+        if (getFirstChar(item) != firstCharOnLastItem) { // new header found for item
+          int numColumnOfItem = i % getNumColumns();
+          if (numColumnOfItem > 0 && !EMPTY_NAME.equals(item)) { // fill row with empty items
+            int emptyVideos = getNumColumns() - numColumnOfItem;
+            for (int j = 0; j < emptyVideos; j++) {
+              items.add(i, EMPTY_NAME);
+              if (j != emptyVideos - 1) {
+                i++;
+              }
+            }
+            continue;
+          } else if (numColumnOfItem == 0 && EMPTY_NAME.equals(item)){
+            // remove empty items to avoid empty rows when removing items
+            while (items.get(i).equals(EMPTY_NAME)) {
+              items.remove(i);
+            }
+            i--;
+          }
+          if (!EMPTY_NAME.equals(item)) {
+            firstCharOnLastItem = getFirstChar(item);
+          }
+        }
+      }
+    }
+
+    private int getFirstChar(String name) {
+      if (TextUtils.isEmpty(name)) {
+        return 0;
+      } else {
+        return name.charAt(0);
+      }
     }
   }
 }

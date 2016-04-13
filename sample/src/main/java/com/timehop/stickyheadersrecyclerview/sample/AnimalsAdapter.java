@@ -10,9 +10,9 @@ import java.util.Collection;
 /**
  * Adapter holding a list of animal names of type String. Note that each item must be unique.
  */
-public abstract class AnimalsAdapter<VH extends RecyclerView.ViewHolder>
-    extends RecyclerView.Adapter<VH> {
-  private ArrayList<String> items = new ArrayList<String>();
+public abstract class AnimalsAdapter<VH extends RecyclerView.ViewHolder> extends RecyclerView.Adapter<VH> {
+
+  protected ArrayList<String> items = new ArrayList<String>();
 
   public AnimalsAdapter() {
     setHasStableIds(true);
@@ -20,18 +20,21 @@ public abstract class AnimalsAdapter<VH extends RecyclerView.ViewHolder>
 
   public void add(String object) {
     items.add(object);
-    notifyDataSetChanged();
+
+    updateAdapter();
   }
 
   public void add(int index, String object) {
     items.add(index, object);
-    notifyDataSetChanged();
+
+    updateAdapter();
   }
 
   public void addAll(Collection<? extends String> collection) {
     if (collection != null) {
       items.addAll(collection);
-      notifyDataSetChanged();
+
+      updateAdapter();
     }
   }
 
@@ -41,12 +44,14 @@ public abstract class AnimalsAdapter<VH extends RecyclerView.ViewHolder>
 
   public void clear() {
     items.clear();
-    notifyDataSetChanged();
+
+    updateAdapter();
   }
 
   public void remove(String object) {
     items.remove(object);
-    notifyDataSetChanged();
+
+    updateAdapter();
   }
 
   public String getItem(int position) {
@@ -61,5 +66,9 @@ public abstract class AnimalsAdapter<VH extends RecyclerView.ViewHolder>
   @Override
   public int getItemCount() {
     return items.size();
+  }
+
+  public void updateAdapter() {
+    super.notifyDataSetChanged();
   }
 }

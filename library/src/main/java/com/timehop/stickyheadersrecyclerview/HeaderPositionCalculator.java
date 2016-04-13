@@ -28,8 +28,7 @@ public class HeaderPositionCalculator {
   private final Rect mTempRect1 = new Rect();
   private final Rect mTempRect2 = new Rect();
 
-  public HeaderPositionCalculator(StickyRecyclerHeadersAdapter adapter, HeaderProvider headerProvider,
-      OrientationProvider orientationProvider, DimensionCalculator dimensionCalculator) {
+  public HeaderPositionCalculator(StickyRecyclerHeadersAdapter adapter, HeaderProvider headerProvider, OrientationProvider orientationProvider, DimensionCalculator dimensionCalculator) {
     mAdapter = adapter;
     mHeaderProvider = headerProvider;
     mOrientationProvider = orientationProvider;
@@ -72,6 +71,13 @@ public class HeaderPositionCalculator {
   public boolean hasNewHeader(int position, boolean isReverseLayout) {
     if (indexOutOfBounds(position)) {
       return false;
+    }
+
+    int numColumns = mAdapter.getNumColumns();
+    int columnOfItem = position % numColumns;
+    if (columnOfItem > 0) {
+      int firstItemOnRowPosition = position - columnOfItem;
+      return hasNewHeader(firstItemOnRowPosition, isReverseLayout);
     }
 
     long headerId = mAdapter.getHeaderId(position);
