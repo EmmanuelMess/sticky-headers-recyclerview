@@ -25,7 +25,7 @@ public class DimensionCalculator {
       MarginLayoutParams marginLayoutParams = (MarginLayoutParams) layoutParams;
       initMarginRect(margins, marginLayoutParams);
     } else {
-        margins.set(0, 0, 0, 0);
+      margins.set(0, 0, 0, 0);
     }
   }
 
@@ -45,4 +45,15 @@ public class DimensionCalculator {
     );
   }
 
+  public Rect getMarginRect(View header) {
+    Rect rect = new Rect();
+
+    if (header.getLayoutParams() instanceof MarginLayoutParams) {
+      initMarginRect(rect, (MarginLayoutParams) header.getLayoutParams());
+    } else {
+      rect.set(0, 0, 0, 0);
+    }
+
+    return rect;
+  }
 }

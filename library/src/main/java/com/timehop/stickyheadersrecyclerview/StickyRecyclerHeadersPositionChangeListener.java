@@ -3,6 +3,8 @@ package com.timehop.stickyheadersrecyclerview;
 import android.graphics.Rect;
 import android.view.View;
 
+import com.timehop.stickyheadersrecyclerview.decorators.StickyRecyclerHeadersDecoration;
+
 /**
  * Created by Rafael Baboni Dominiquini on 13/04/16.
  */

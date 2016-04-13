@@ -35,8 +35,7 @@ public class HeaderViewCache implements HeaderProvider {
       mAdapter.onBindHeaderViewHolder(viewHolder, position);
       header = viewHolder.itemView;
       if (header.getLayoutParams() == null) {
-        header.setLayoutParams(new ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
+        header.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT));
       }
 
       int widthSpec;

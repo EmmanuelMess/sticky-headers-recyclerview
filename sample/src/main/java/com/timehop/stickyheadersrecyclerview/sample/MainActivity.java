@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -20,13 +21,15 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersAdapter;
-import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersDecoration;
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersPositionChangeListener;
 import com.timehop.stickyheadersrecyclerview.StickyRecyclerHeadersTouchListener;
+import com.timehop.stickyheadersrecyclerview.decorators.StickyRecyclerHeadersDecoration;
 
 import java.security.SecureRandom;
 
 public class MainActivity extends AppCompatActivity {
+
+  public static final int NUM_COLUMNS = 1;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -39,7 +42,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Set adapter populated with example dummy data
     final AnimalsHeadersAdapter adapter = new AnimalsHeadersAdapter();
-    adapter.add("Animals below!");
+    adapter.add("List of Animals");
     adapter.addAll(getDummyDataSet());
     recyclerView.setAdapter(adapter);
 
@@ -62,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
 
     // Set layout manager
     int orientation = getLayoutManagerOrientation(getResources().getConfiguration().orientation);
-    final LinearLayoutManager layoutManager = new LinearLayoutManager(this, orientation, isReverseButton.isChecked());
+    final GridLayoutManager layoutManager = new GridLayoutManager(this, NUM_COLUMNS, orientation, isReverseButton.isChecked());
     recyclerView.setLayoutManager(layoutManager);
 
     // Add the sticky headers decoration
@@ -136,8 +139,7 @@ public class MainActivity extends AppCompatActivity {
       implements StickyRecyclerHeadersAdapter<RecyclerView.ViewHolder> {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-      View view = LayoutInflater.from(parent.getContext())
-          .inflate(R.layout.view_item, parent, false);
+      View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_item, parent, false);
       return new RecyclerView.ViewHolder(view) {
       };
     }
@@ -159,8 +161,7 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public RecyclerView.ViewHolder onCreateHeaderViewHolder(ViewGroup parent, int position) {
-      View view = LayoutInflater.from(parent.getContext())
-          .inflate(R.layout.view_header, parent, false);
+      View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_header, parent, false);
       return new RecyclerView.ViewHolder(view) {
       };
     }

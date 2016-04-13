@@ -1,15 +1,15 @@
 package com.timehop.stickyheadersrecyclerview;
 
 /**
- * ItemVisibilityAdapter provides a way for StickyRecyclerHeadersDecoration
+ * ItemVisibilityAdapter provides a way for StickyRecyclerLinearHeadersDecoration
  * to know if a row is visible or not.  This comes into play if the
  * recyclerview's layout manager  is set up to provide extra layout space (by
  * overriding getExtraLayoutSpace). In this case rows that aren't visible (yet)
- * will be bound and StickyRecyclerHeadersDecoration will need to know which
+ * will be bound and StickyRecyclerLinearHeadersDecoration will need to know which
  * are visible to correctly calculate the row to base the sticky header on
  *
  * To use it you must pass an instance of a class that implements this
- * interface as a second argment StickyRecyclerHeadersDecoration's constructor.
+ * interface as a second argment StickyRecyclerLinearHeadersDecoration's constructor.
  *
  */
 public interface ItemVisibilityAdapter {

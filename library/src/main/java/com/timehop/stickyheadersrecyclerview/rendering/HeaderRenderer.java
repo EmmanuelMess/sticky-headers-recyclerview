@@ -84,5 +84,4 @@ public class HeaderRenderer {
           recyclerView.getHeight() - recyclerView.getPaddingBottom() - clipRect.bottom);
     }
   }
-
 }

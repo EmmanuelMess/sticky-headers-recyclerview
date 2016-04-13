@@ -123,6 +123,14 @@ public class HeaderPositionCalculator {
     }
   }
 
+  public Rect getHeaderBounds(RecyclerView recyclerView, View header, View firstView, boolean firstHeader, boolean enableStickyHeader) {
+    Rect rect = new Rect();
+
+    initHeaderBounds(rect, recyclerView, header, firstView, firstHeader, enableStickyHeader);
+
+    return rect;
+  }
+
   private void initDefaultHeaderOffset(Rect headerMargins, RecyclerView recyclerView, View header, View firstView, int orientation, boolean enableStickyHeader) {
     int translationX, translationY;
     mDimensionCalculator.initMargins(mTempRect1, header);
