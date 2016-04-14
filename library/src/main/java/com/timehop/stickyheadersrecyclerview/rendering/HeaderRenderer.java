@@ -3,6 +3,7 @@ package com.timehop.stickyheadersrecyclerview.rendering;
 import android.graphics.Canvas;
 import android.graphics.Rect;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -54,6 +55,7 @@ public class HeaderRenderer {
     canvas.translate(offset.left, offset.top);
 
     header.draw(canvas);
+
     canvas.restore();
   }
 

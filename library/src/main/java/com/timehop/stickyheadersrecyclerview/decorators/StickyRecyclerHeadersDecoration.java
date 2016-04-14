@@ -68,12 +68,14 @@ public class StickyRecyclerHeadersDecoration extends RecyclerView.ItemDecoration
   public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
     super.getItemOffsets(outRect, view, parent, state);
     int itemPosition = parent.getChildAdapterPosition(view);
-    if (itemPosition == RecyclerView.NO_POSITION) {
-      return;
-    }
-    if (mHeaderPositionCalculator.hasNewHeader(itemPosition, mOrientationProvider.isReverseLayout(parent))) {
-      View header = getHeaderView(parent, itemPosition);
-      setItemOffsetsForHeader(outRect, header, mOrientationProvider.getOrientation(parent));
+
+    if (itemPosition != RecyclerView.NO_POSITION) {
+      boolean hasNewHeader = mHeaderPositionCalculator.hasNewHeader(itemPosition, mOrientationProvider.isReverseLayout(parent));
+
+      if (hasNewHeader) {
+        View header = getHeaderView(parent, itemPosition);
+        setItemOffsetsForHeader(outRect, header, mOrientationProvider.getOrientation(parent));
+      }
     }
   }
 
@@ -112,14 +114,14 @@ public class StickyRecyclerHeadersDecoration extends RecyclerView.ItemDecoration
       }
 
       boolean hasStickyHeader = mHeaderPositionCalculator.hasStickyHeader(itemView, mOrientationProvider.getOrientation(parent), position);
-      if (hasStickyHeader || mHeaderPositionCalculator.hasNewHeader(position, mOrientationProvider.isReverseLayout(parent))) {
+      boolean hasNewHeader = mHeaderPositionCalculator.hasNewHeader(position, mOrientationProvider.isReverseLayout(parent));
+      if (hasStickyHeader || hasNewHeader) {
         View header = mHeaderProvider.getHeader(parent, position);
 
         //re-use existing Rect, if any.
         Rect headerOffset = mHeaderRects.get(position);
         if (headerOffset == null) {
-          headerOffset = new Rect();
-          mHeaderRects.put(position, headerOffset);
+          mHeaderRects.put(position, headerOffset = new Rect());
         }
 
         mHeaderPositionCalculator.initHeaderBounds(headerOffset, parent, header, itemView, hasStickyHeader, mEnableStickyHeader);

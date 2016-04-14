@@ -48,7 +48,9 @@ public class HeaderPositionCalculator {
    */
   public boolean hasStickyHeader(View itemView, int orientation, int position) {
     int offset, margin;
+
     mDimensionCalculator.initMargins(mTempRect1, itemView);
+
     if (orientation == LinearLayout.VERTICAL) {
       offset = itemView.getTop();
       margin = mTempRect1.top;
@@ -77,6 +79,7 @@ public class HeaderPositionCalculator {
     int columnOfItem = position % numColumns;
     if (columnOfItem > 0) {
       int firstItemOnRowPosition = position - columnOfItem;
+
       return hasNewHeader(firstItemOnRowPosition, isReverseLayout);
     }
 
