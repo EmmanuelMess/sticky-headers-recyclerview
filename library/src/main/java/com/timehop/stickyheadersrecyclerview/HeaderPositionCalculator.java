@@ -75,7 +75,7 @@ public class HeaderPositionCalculator {
       return false;
     }
 
-    int numColumns = mAdapter.getNumColumns();
+    int numColumns = mAdapter.getNumColumns() - mAdapter.getSpanSize(position) + 1;
     int columnOfItem = position % numColumns;
     if (columnOfItem > 0) {
       int firstItemOnRowPosition = position - columnOfItem;
@@ -94,6 +94,7 @@ public class HeaderPositionCalculator {
     if (!indexOutOfBounds(nextItemPosition)){
       nextItemHeaderId = mAdapter.getHeaderId(nextItemPosition);
     }
+
     int firstItemPosition = isReverseLayout? mAdapter.getItemCount()-1 : 0;
 
     return position == firstItemPosition || headerId != nextItemHeaderId;

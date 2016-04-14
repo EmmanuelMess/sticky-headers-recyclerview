@@ -42,4 +42,12 @@ public interface StickyRecyclerHeadersAdapter<VH extends RecyclerView.ViewHolder
    * @return the number of columns
    */
   int getNumColumns();
+
+  /**
+   * Returns the number of span occupied by the item at <code>position</code>.
+   *
+   * @param position The adapter position of the item
+   * @return The number of spans occupied by the item at the provided position
+   */
+  int getSpanSize(int position);
 }

@@ -24,6 +24,6 @@ ext {
     supportLibsVersion = '23.3.0'
     targetSdkVersion = 23
     minSdkVersion = 11
-    versionCode = 15
-    versionName = "0.5.5"
+    versionCode = 16
+    versionName = "0.5.6"
 }

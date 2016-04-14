@@ -8,9 +8,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.StaggeredGridLayoutManager;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -68,9 +68,16 @@ public class MainActivity extends AppCompatActivity {
 
     // Set layout manager
     int orientation = getLayoutManagerOrientation(getResources().getConfiguration().orientation);
-    final StaggeredGridLayoutManager layoutManager = new StaggeredGridLayoutManager(NUM_COLUMNS, orientation);
+    final GridLayoutManager layoutManager = new GridLayoutManager(this, NUM_COLUMNS, orientation, false);
     layoutManager.setReverseLayout(isReverseButton.isChecked());
     recyclerView.setLayoutManager(layoutManager);
+
+    layoutManager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
+      @Override
+      public int getSpanSize(int position) {
+        return adapter.getSpanSize(position);
+      }
+    });
 
     // Add the sticky headers decoration
     final StickyRecyclerHeadersDecoration headersDecor = new StickyRecyclerHeadersDecoration(adapter, true);
@@ -169,6 +176,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public RecyclerView.ViewHolder onCreateHeaderViewHolder(ViewGroup parent, int position) {
       View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.view_header, parent, false);
+
       return new RecyclerView.ViewHolder(view) {
       };
     }
@@ -187,10 +195,19 @@ public class MainActivity extends AppCompatActivity {
     }
 
     @Override
+    public int getSpanSize(int position) {
+      return isVowel((char) getHeaderId(position)) ? NUM_COLUMNS : 1;
+    }
+
+    @Override
     public void updateAdapter() {
       reorderItems();
 
       super.updateAdapter();
+    }
+
+    private boolean isVowel(char c) {
+      return "AEIOUaeiou".indexOf(c) != -1;
     }
 
     private int getRandomColor() {
