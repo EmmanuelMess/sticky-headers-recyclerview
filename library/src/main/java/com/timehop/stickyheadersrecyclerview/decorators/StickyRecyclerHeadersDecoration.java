@@ -21,7 +21,6 @@ import com.timehop.stickyheadersrecyclerview.util.OrientationProvider;
 public class StickyRecyclerHeadersDecoration extends RecyclerView.ItemDecoration {
 
   private final StickyRecyclerHeadersAdapter mAdapter;
-  private final SparseArray<Rect> mHeaderRects = new SparseArray<>();
   private final HeaderProvider mHeaderProvider;
   private final OrientationProvider mOrientationProvider;
   private final HeaderPositionCalculator mHeaderPositionCalculator;
@@ -36,6 +35,7 @@ public class StickyRecyclerHeadersDecoration extends RecyclerView.ItemDecoration
    * The following field is used as a buffer for internal calculations. Its sole purpose is to avoid
    * allocating new Rect every time we need one.
    */
+  private final SparseArray<Rect> mHeaderRects = new SparseArray<>();
   private final Rect mTempRect = new Rect();
 
   public StickyRecyclerHeadersDecoration(StickyRecyclerHeadersAdapter adapter) {
@@ -109,26 +109,26 @@ public class StickyRecyclerHeadersDecoration extends RecyclerView.ItemDecoration
 
       int position = parent.getChildAdapterPosition(itemView);
 
-      if (position == RecyclerView.NO_POSITION || position % (mAdapter.getNumColumns() - mAdapter.getSpanSize(position) + 1) > 0) {
-        continue;
-      }
+      int columnOfItem = position % (mAdapter.getNumColumns() - mAdapter.getSpanSize(position) + 1);
+      if (position != RecyclerView.NO_POSITION && columnOfItem == 0) {
+        boolean hasStickyHeader = mHeaderPositionCalculator.hasStickyHeader(itemView, mOrientationProvider.getOrientation(parent), position);
+        boolean hasNewHeader = mHeaderPositionCalculator.hasNewHeader(position, mOrientationProvider.isReverseLayout(parent));
 
-      boolean hasStickyHeader = mHeaderPositionCalculator.hasStickyHeader(itemView, mOrientationProvider.getOrientation(parent), position);
-      boolean hasNewHeader = mHeaderPositionCalculator.hasNewHeader(position, mOrientationProvider.isReverseLayout(parent));
-      if (hasStickyHeader || hasNewHeader) {
-        View header = mHeaderProvider.getHeader(parent, position);
+        if (hasStickyHeader || hasNewHeader) {
+          View header = mHeaderProvider.getHeader(parent, position);
 
-        //re-use existing Rect, if any.
-        Rect headerOffset = mHeaderRects.get(position);
-        if (headerOffset == null) {
-          mHeaderRects.put(position, headerOffset = new Rect());
-        }
+          //re-use existing Rect, if any.
+          Rect headerOffset = mHeaderRects.get(position);
+          if (headerOffset == null) {
+            mHeaderRects.put(position, headerOffset = new Rect());
+          }
 
-        mHeaderPositionCalculator.initHeaderBounds(headerOffset, parent, header, itemView, hasStickyHeader, mEnableStickyHeader);
-        mRenderer.drawHeader(parent, canvas, header, headerOffset);
+          mHeaderPositionCalculator.initHeaderBounds(headerOffset, parent, header, itemView, hasStickyHeader, mEnableStickyHeader);
+          mRenderer.drawHeader(parent, canvas, header, headerOffset);
 
-        if (mEnableStickyHeader && mHeaderListener != null) {
-          mHeaderListener.onHeaderPositionChanged(this, mAdapter.getHeaderId(position), header, position, headerOffset);
+          if (mEnableStickyHeader && mHeaderListener != null) {
+            mHeaderListener.onHeaderPositionChanged(this, mAdapter.getHeaderId(position), header, position, headerOffset);
+          }
         }
       }
     }
@@ -177,7 +177,7 @@ public class StickyRecyclerHeadersDecoration extends RecyclerView.ItemDecoration
   }
 
   /**
-   * Invalidates cached headers.  This does not invalidate the recyclerview, you should do that manually after
+   * Invalidates cached headers. This does not invalidate the recyclerview, you should do that manually after
    * calling this method.
    */
   public void invalidateHeaders() {

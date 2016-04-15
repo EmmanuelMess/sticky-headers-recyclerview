@@ -22,8 +22,7 @@ public class DimensionCalculator {
     LayoutParams layoutParams = view.getLayoutParams();
 
     if (layoutParams instanceof MarginLayoutParams) {
-      MarginLayoutParams marginLayoutParams = (MarginLayoutParams) layoutParams;
-      initMarginRect(margins, marginLayoutParams);
+      initMarginRect(margins, (MarginLayoutParams) layoutParams);
     } else {
       margins.set(0, 0, 0, 0);
     }
