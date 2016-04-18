@@ -99,16 +99,16 @@ public class MainActivity extends AppCompatActivity {
     recyclerView.addItemDecoration(new DividerDecoration(this));
 
     // Add touch listeners
-    StickyRecyclerHeadersTouchListener touchListener =
-        new StickyRecyclerHeadersTouchListener(recyclerView, headersDecor);
-    touchListener.setOnHeaderClickListener(
-        new StickyRecyclerHeadersTouchListener.OnHeaderClickListener() {
+    StickyRecyclerHeadersTouchListener touchListener = new StickyRecyclerHeadersTouchListener(recyclerView, headersDecor);
+    touchListener.setOnHeaderClickListener(new StickyRecyclerHeadersTouchListener.OnHeaderClickListener() {
           @Override
           public void onHeaderClick(View header, int position, long headerId) {
-            Toast.makeText(MainActivity.this, "Header position: " + position + ", id: " + headerId,
-                Toast.LENGTH_SHORT).show();
+            CharSequence headerStr = ((TextView) header.findViewById(R.id.header_text)).getText();
+
+            Toast.makeText(MainActivity.this, "Header: " + headerStr + ", Header Position: " + position + ", ID: " + headerId, Toast.LENGTH_SHORT).show();
           }
         });
+
     recyclerView.addOnItemTouchListener(touchListener);
     recyclerView.addOnItemTouchListener(new RecyclerItemClickListener(this, new RecyclerItemClickListener.OnItemClickListener() {
       @Override
@@ -116,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
         adapter.remove(adapter.getItem(position));
       }
     }));
+
     adapter.registerAdapterDataObserver(new RecyclerView.AdapterDataObserver() {
       @Override
       public void onChanged() {
@@ -127,6 +128,7 @@ public class MainActivity extends AppCompatActivity {
       @Override
       public void onClick(View v) {
         boolean isChecked = isReverseButton.isChecked();
+
         isReverseButton.setChecked(isChecked);
         layoutManager.setReverseLayout(isChecked);
         adapter.notifyDataSetChanged();
