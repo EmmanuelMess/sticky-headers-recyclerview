@@ -21,13 +21,6 @@ public class HeaderPositionCalculator {
   private final HeaderProvider mHeaderProvider;
   private final DimensionCalculator mDimensionCalculator;
 
-  /**
-   * The following fields are used as buffers for internal calculations. Their sole purpose is to avoid
-   * allocating new Rect every time we need one.
-   */
-  private final Rect mTempRect1 = new Rect();
-  private final Rect mTempRect2 = new Rect();
-
   public HeaderPositionCalculator(StickyRecyclerHeadersAdapter adapter, HeaderProvider headerProvider, OrientationProvider orientationProvider, DimensionCalculator dimensionCalculator) {
     mAdapter = adapter;
     mHeaderProvider = headerProvider;
@@ -49,15 +42,15 @@ public class HeaderPositionCalculator {
   public boolean hasStickyHeader(View itemView, int orientation, int position) {
     int offset, margin;
 
-    mDimensionCalculator.initMargins(mTempRect1, itemView);
-
     if (itemView != null) {
+      Rect rect = mDimensionCalculator.getMargins(itemView);
+
       if (orientation == LinearLayout.VERTICAL) {
         offset = itemView.getTop();
-        margin = mTempRect1.top;
+        margin = rect.top;
       } else {
         offset = itemView.getLeft();
-        margin = mTempRect1.left;
+        margin = rect.left;
       }
     } else {
       offset = -1;
@@ -127,9 +120,10 @@ public class HeaderPositionCalculator {
     return false;
   }
 
-  public void initHeaderBounds(Rect bounds, RecyclerView recyclerView, View header, View firstView, boolean firstHeader, boolean enableStickyHeader) {
+  public Rect getHeaderBounds(RecyclerView recyclerView, View header, View firstView, boolean firstHeader, boolean enableStickyHeader) {
     int orientation = mOrientationProvider.getOrientation(recyclerView);
-    initDefaultHeaderOffset(bounds, recyclerView, header, firstView, orientation, enableStickyHeader);
+
+    Rect bounds = getDefaultHeaderOffset(recyclerView, header, firstView, orientation, enableStickyHeader);
 
     if (enableStickyHeader && firstHeader && isStickyHeaderBeingPushedOffscreen(recyclerView, header)) {
       View viewAfterNextHeader = getFirstViewUnobscuredByHeader(recyclerView, header);
@@ -137,20 +131,14 @@ public class HeaderPositionCalculator {
       View secondHeader = mHeaderProvider.getHeader(recyclerView, firstViewUnderHeaderPosition);
       translateHeaderWithNextHeader(recyclerView, mOrientationProvider.getOrientation(recyclerView), bounds, header, viewAfterNextHeader, secondHeader);
     }
+
+    return bounds;
   }
 
-  public Rect getHeaderBounds(RecyclerView recyclerView, View header, View firstView, boolean firstHeader, boolean enableStickyHeader) {
-    Rect rect = new Rect();
-
-    initHeaderBounds(rect, recyclerView, header, firstView, firstHeader, enableStickyHeader);
-
-    return rect;
-  }
-
-  private void initDefaultHeaderOffset(Rect headerMargins, RecyclerView recyclerView, View header, View firstView, int orientation, boolean enableStickyHeader) {
+  private Rect getDefaultHeaderOffset(RecyclerView recyclerView, View header, View firstView, int orientation, boolean enableStickyHeader) {
     int translationX, translationY;
 
-    mDimensionCalculator.initMargins(mTempRect1, header);
+    Rect headerMargins = mDimensionCalculator.getMargins(header);
 
     if (header != null && firstView != null) {
       ViewGroup.LayoutParams layoutParams = firstView.getLayoutParams();
@@ -163,18 +151,20 @@ public class HeaderPositionCalculator {
       }
 
       if (orientation == LinearLayoutManager.VERTICAL) {
-        translationX = firstView.getLeft() - leftMargin + mTempRect1.left;
+        translationX = firstView.getLeft() - leftMargin + headerMargins.left;
         translationY = enableStickyHeader ?
-                Math.max(firstView.getTop() - topMargin - header.getHeight() - mTempRect1.bottom, getListTop(recyclerView) + mTempRect1.top) :
-                firstView.getTop() - topMargin - header.getHeight() - mTempRect1.bottom;
+                Math.max(firstView.getTop() - topMargin - header.getHeight() - headerMargins.bottom, getListTop(recyclerView) + headerMargins.top) :
+                firstView.getTop() - topMargin - header.getHeight() - headerMargins.bottom;
       } else {
-        translationY = firstView.getTop() - topMargin + mTempRect1.top;
+        translationY = firstView.getTop() - topMargin + headerMargins.top;
         translationX = enableStickyHeader ?
-                Math.max(firstView.getLeft() - leftMargin - header.getWidth() - mTempRect1.right, getListLeft(recyclerView) + mTempRect1.left) :
-                firstView.getLeft() - leftMargin - header.getWidth() - mTempRect1.right;
+                Math.max(firstView.getLeft() - leftMargin - header.getWidth() - headerMargins.right, getListLeft(recyclerView) + headerMargins.left) :
+                firstView.getLeft() - leftMargin - header.getWidth() - headerMargins.right;
       }
 
-      headerMargins.set(translationX, translationY, translationX + header.getWidth(), translationY + header.getHeight());
+      return new Rect(translationX, translationY, translationX + header.getWidth(), translationY + header.getHeight());
+    } else {
+      return headerMargins;
     }
   }
 
@@ -189,18 +179,18 @@ public class HeaderPositionCalculator {
       boolean isReverseLayout = mOrientationProvider.isReverseLayout(recyclerView);
       if (firstViewUnderHeaderPosition > 0 && hasNewHeader(firstViewUnderHeaderPosition, isReverseLayout)) {
         View nextHeader = mHeaderProvider.getHeader(recyclerView, firstViewUnderHeaderPosition);
-        mDimensionCalculator.initMargins(mTempRect1, nextHeader);
-        mDimensionCalculator.initMargins(mTempRect2, stickyHeader);
+        Rect nextHeaderMargins = mDimensionCalculator.getMargins(nextHeader);
+        Rect headerMargins = mDimensionCalculator.getMargins(stickyHeader);
 
         if (mOrientationProvider.getOrientation(recyclerView) == LinearLayoutManager.VERTICAL) {
-          int topOfNextHeader = viewAfterHeader.getTop() - mTempRect1.bottom - nextHeader.getHeight() - mTempRect1.top;
-          int bottomOfThisHeader = recyclerView.getPaddingTop() + stickyHeader.getBottom() + mTempRect2.top + mTempRect2.bottom;
+          int topOfNextHeader = viewAfterHeader.getTop() - nextHeaderMargins.bottom - nextHeader.getHeight() - nextHeaderMargins.top;
+          int bottomOfThisHeader = recyclerView.getPaddingTop() + stickyHeader.getBottom() + headerMargins.top + headerMargins.bottom;
           if (topOfNextHeader < bottomOfThisHeader) {
             return true;
           }
         } else {
-          int leftOfNextHeader = viewAfterHeader.getLeft() - mTempRect1.right - nextHeader.getWidth() - mTempRect1.left;
-          int rightOfThisHeader = recyclerView.getPaddingLeft() + stickyHeader.getRight() + mTempRect2.left + mTempRect2.right;
+          int leftOfNextHeader = viewAfterHeader.getLeft() - nextHeaderMargins.right - nextHeader.getWidth() - nextHeaderMargins.left;
+          int rightOfThisHeader = recyclerView.getPaddingLeft() + stickyHeader.getRight() + headerMargins.left + headerMargins.right;
           if (leftOfNextHeader < rightOfThisHeader) {
             return true;
           }
@@ -214,18 +204,18 @@ public class HeaderPositionCalculator {
   private void translateHeaderWithNextHeader(RecyclerView recyclerView, int orientation, Rect translation,
     View currentHeader, View viewAfterNextHeader, View nextHeader) {
 
-    mDimensionCalculator.initMargins(mTempRect1, nextHeader);
-    mDimensionCalculator.initMargins(mTempRect2, currentHeader);
+    Rect nextHeaderMargins = mDimensionCalculator.getMargins(nextHeader);
+    Rect stickyHeaderMargins = mDimensionCalculator.getMargins(currentHeader);
 
     if (orientation == LinearLayoutManager.VERTICAL) {
-      int topOfStickyHeader = getListTop(recyclerView) + mTempRect2.top + mTempRect2.bottom;
-      int shiftFromNextHeader = viewAfterNextHeader.getTop() - nextHeader.getHeight() - mTempRect1.bottom - mTempRect1.top - currentHeader.getHeight() - topOfStickyHeader;
+      int topOfStickyHeader = getListTop(recyclerView) + stickyHeaderMargins.top + stickyHeaderMargins.bottom;
+      int shiftFromNextHeader = viewAfterNextHeader.getTop() - nextHeader.getHeight() - nextHeaderMargins.bottom - nextHeaderMargins.top - currentHeader.getHeight() - topOfStickyHeader;
       if (shiftFromNextHeader < topOfStickyHeader) {
         translation.top += shiftFromNextHeader;
       }
     } else {
-      int leftOfStickyHeader = getListLeft(recyclerView) + mTempRect2.left + mTempRect2.right;
-      int shiftFromNextHeader = viewAfterNextHeader.getLeft() - nextHeader.getWidth() - mTempRect1.right - mTempRect1.left - currentHeader.getWidth() - leftOfStickyHeader;
+      int leftOfStickyHeader = getListLeft(recyclerView) + stickyHeaderMargins.left + stickyHeaderMargins.right;
+      int shiftFromNextHeader = viewAfterNextHeader.getLeft() - nextHeader.getWidth() - nextHeaderMargins.right - nextHeaderMargins.left - currentHeader.getWidth() - leftOfStickyHeader;
       if (shiftFromNextHeader < leftOfStickyHeader) {
         translation.left += shiftFromNextHeader;
       }
@@ -263,7 +253,7 @@ public class HeaderPositionCalculator {
    */
   private boolean itemIsObscuredByHeader(RecyclerView parent, View item, View header, int orientation) {
     RecyclerView.LayoutParams layoutParams = (RecyclerView.LayoutParams) item.getLayoutParams();
-    mDimensionCalculator.initMargins(mTempRect1, header);
+    Rect rect = mDimensionCalculator.getMargins(header);
 
     int adapterPosition = parent.getChildAdapterPosition(item);
     if (adapterPosition == RecyclerView.NO_POSITION || mHeaderProvider.getHeader(parent, adapterPosition) != header) {
@@ -274,13 +264,13 @@ public class HeaderPositionCalculator {
 
     if (orientation == LinearLayoutManager.VERTICAL) {
       int itemTop = item.getTop() - layoutParams.topMargin;
-      int headerBottom = getListTop(parent) + header.getBottom() + mTempRect1.bottom + mTempRect1.top;
+      int headerBottom = getListTop(parent) + header.getBottom() + rect.bottom + rect.top;
       if (itemTop >= headerBottom) {
         return false;
       }
     } else {
       int itemLeft = item.getLeft() - layoutParams.leftMargin;
-      int headerRight = getListLeft(parent) + header.getRight() + mTempRect1.right + mTempRect1.left;
+      int headerRight = getListLeft(parent) + header.getRight() + rect.right + rect.left;
       if (itemLeft >= headerRight) {
         return false;
       }
