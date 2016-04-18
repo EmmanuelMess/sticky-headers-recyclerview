@@ -225,15 +225,15 @@ public class MainActivity extends AppCompatActivity {
         if (getFirstChar(item) != firstCharOnLastItem) { // new header found for item
           int numColumnOfItem = i % getNumColumns();
           if (numColumnOfItem > 0 && !EMPTY_NAME.equals(item)) { // fill row with empty items
-            int emptyVideos = getNumColumns() - numColumnOfItem;
-            for (int j = 0; j < emptyVideos; j++) {
+            int emptyRows = getNumColumns() - numColumnOfItem;
+            for (int j = 0; j < emptyRows; j++) {
               items.add(i, EMPTY_NAME);
-              if (j != emptyVideos - 1) {
+              if (j != emptyRows - 1) {
                 i++;
               }
             }
             continue;
-          } else if (numColumnOfItem == 0 && EMPTY_NAME.equals(item)){
+          } else if (numColumnOfItem == 0 && EMPTY_NAME.equals(item)) {
             // remove empty items to avoid empty rows when removing items
             while (items.get(i).equals(EMPTY_NAME)) {
               items.remove(i);

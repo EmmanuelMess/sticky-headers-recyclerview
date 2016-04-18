@@ -19,9 +19,9 @@ public class DimensionCalculator {
    * @param view for which to get margins
    */
   public void initMargins(Rect margins, View view) {
-    LayoutParams layoutParams = view.getLayoutParams();
+    LayoutParams layoutParams = view != null ? view.getLayoutParams() : null;
 
-    if (layoutParams instanceof MarginLayoutParams) {
+    if (layoutParams != null && layoutParams instanceof MarginLayoutParams) {
       initMarginRect(margins, (MarginLayoutParams) layoutParams);
     } else {
       margins.set(0, 0, 0, 0);
@@ -36,18 +36,20 @@ public class DimensionCalculator {
    * @param marginLayoutParams margins to populate the Rect with
    */
   private void initMarginRect(Rect marginRect, MarginLayoutParams marginLayoutParams) {
+    if (marginLayoutParams != null) {
       marginRect.set(
-        marginLayoutParams.leftMargin,
-        marginLayoutParams.topMargin,
-        marginLayoutParams.rightMargin,
-        marginLayoutParams.bottomMargin
-    );
+              marginLayoutParams.leftMargin,
+              marginLayoutParams.topMargin,
+              marginLayoutParams.rightMargin,
+              marginLayoutParams.bottomMargin
+      );
+    }
   }
 
   public Rect getMarginRect(View header) {
     Rect rect = new Rect();
 
-    if (header.getLayoutParams() instanceof MarginLayoutParams) {
+    if (header != null && header.getLayoutParams() instanceof MarginLayoutParams) {
       initMarginRect(rect, (MarginLayoutParams) header.getLayoutParams());
     } else {
       rect.set(0, 0, 0, 0);

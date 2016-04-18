@@ -18,8 +18,7 @@ public class HeaderViewCache implements HeaderProvider {
   private final LongSparseArray<View> mHeaderViews = new LongSparseArray<>();
   private final OrientationProvider mOrientationProvider;
 
-  public HeaderViewCache(StickyRecyclerHeadersAdapter adapter,
-      OrientationProvider orientationProvider) {
+  public HeaderViewCache(StickyRecyclerHeadersAdapter adapter, OrientationProvider orientationProvider) {
     mAdapter = adapter;
     mOrientationProvider = orientationProvider;
   }
@@ -29,8 +28,8 @@ public class HeaderViewCache implements HeaderProvider {
     long headerId = mAdapter.getHeaderId(position);
 
     View header = mHeaderViews.get(headerId);
+
     if (header == null) {
-      //TODO - recycle views
       RecyclerView.ViewHolder viewHolder = mAdapter.onCreateHeaderViewHolder(parent, position);
       mAdapter.onBindHeaderViewHolder(viewHolder, position);
       header = viewHolder.itemView;
@@ -49,14 +48,15 @@ public class HeaderViewCache implements HeaderProvider {
         heightSpec = View.MeasureSpec.makeMeasureSpec(parent.getHeight(), View.MeasureSpec.EXACTLY);
       }
 
-      int childWidth = ViewGroup.getChildMeasureSpec(widthSpec,
-          parent.getPaddingLeft() + parent.getPaddingRight(), header.getLayoutParams().width);
-      int childHeight = ViewGroup.getChildMeasureSpec(heightSpec,
-          parent.getPaddingTop() + parent.getPaddingBottom(), header.getLayoutParams().height);
+      int childWidth = ViewGroup.getChildMeasureSpec(widthSpec, parent.getPaddingLeft() + parent.getPaddingRight(), header.getLayoutParams().width);
+      int childHeight = ViewGroup.getChildMeasureSpec(heightSpec, parent.getPaddingTop() + parent.getPaddingBottom(), header.getLayoutParams().height);
+
       header.measure(childWidth, childHeight);
       header.layout(0, 0, header.getMeasuredWidth(), header.getMeasuredHeight());
+
       mHeaderViews.put(headerId, header);
     }
+
     return header;
   }
 
