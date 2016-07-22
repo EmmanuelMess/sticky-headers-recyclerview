@@ -104,7 +104,7 @@ public class StickyRecyclerHeadersDecoration extends RecyclerView.ItemDecoration
     for (int i = 0; i < childCount; i++) {
       View itemView = parent.getChildAt(i);
 
-      int position = parent.getChildAdapterPosition(itemView);
+      int position = parent.getChildLayoutPosition(itemView);
 
       int columnOfItem = position % (mAdapter.getNumColumns() - mAdapter.getSpanSize(position) + 1);
       if (position != RecyclerView.NO_POSITION && columnOfItem == 0) {
