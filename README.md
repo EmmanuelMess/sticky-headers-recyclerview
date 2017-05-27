@@ -16,10 +16,16 @@ Here is a quick video of it in action (click to see the full video):
 Download
 --------
 
-Current version: [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.timehop.stickyheadersrecyclerview/library/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.timehop.stickyheadersrecyclerview/library)
+    allprojects {
+        repositories {
+            ...
+            maven { url 'https://jitpack.io' }
+        }
+    }
 
-    compile 'com.timehop.stickyheadersrecyclerview:library:[latest.version.number]@aar'
-
+    dependencies {
+  		compile 'com.github.emmanuelmess:sticky-headers-recyclerview:library:[latest.version.number]'
+  	}
 
 Usage
 -----
@@ -34,13 +40,17 @@ There interface looks like this:
 
 ```java
 public interface StickyRecyclerHeadersAdapter<VH extends RecyclerView.ViewHolder> {
-  public long getHeaderId(int position);
+  long getHeaderId(int position);
 
-  public VH onCreateHeaderViewHolder(ViewGroup parent);
+  VH onCreateHeaderViewHolder(ViewGroup parent);
 
-  public void onBindHeaderViewHolder(VH holder, int position);
+  void onBindHeaderViewHolder(VH holder, int position);
 
-  public int getItemCount();
+  int getItemCount();
+
+  int getNumColumns();//1 if you only want one column
+
+  int getSpanSize(int position);//1 if you only want one column
 }
 ```
 
