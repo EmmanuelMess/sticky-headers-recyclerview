@@ -7,11 +7,11 @@ LinearLayoutManager in either vertical or horizontal orientation.
 Credit to [Emil Sjölander](https://github.com/emilsjolander) for creating StickyListHeaders,
 a library that many of us relied on for sticky headers in our listviews.
 
-Here is a quick video of it in action (click to see the full video):
+<a><p>
+  <img src="http://i.imgur.com/I0ztoPw.gif" width="350"/>
+  <img src="http://i.imgur.com/b5pJjtL.gif" height="350"/>
+</p></a>
 
-[![animated gif demo](http://i.imgur.com/I0ztoPw.gif)](https://www.youtube.com/watch?v=zluBwbf3aew)
-
-[![animated gif demo](http://i.imgur.com/b5pJjtL.gif)](https://www.youtube.com/watch?v=zluBwbf3aew)
 
 Download
 --------
