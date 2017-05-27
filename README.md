@@ -7,19 +7,36 @@ LinearLayoutManager in either vertical or horizontal orientation.
 Credit to [Emil Sjölander](https://github.com/emilsjolander) for creating StickyListHeaders,
 a library that many of us relied on for sticky headers in our listviews.
 
-Here is a quick video of it in action (click to see the full video):
+<a><p>
+  <img src="http://i.imgur.com/I0ztoPw.gif" width="350"/>
+  <img src="http://i.imgur.com/b5pJjtL.gif" height="350"/>
+</p></a>
 
-[![animated gif demo](http://i.imgur.com/I0ztoPw.gif)](https://www.youtube.com/watch?v=zluBwbf3aew)
-
-[![animated gif demo](http://i.imgur.com/b5pJjtL.gif)](https://www.youtube.com/watch?v=zluBwbf3aew)
 
 Download
 --------
 
-Current version: [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.timehop.stickyheadersrecyclerview/library/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.timehop.stickyheadersrecyclerview/library)
+    allprojects {
+        repositories {
+            ...
+            maven { url 'https://jitpack.io' }
+        }
+    }
 
-    compile 'com.timehop.stickyheadersrecyclerview:library:[latest.version.number]@aar'
+    dependencies {
+  		compile 'com.github.emmanuelmess:sticky-headers-recyclerview:library:[latest.version.number]'
+  	}
 
+Updating from <0.5
+------------------
+```java
+public interface StickyRecyclerHeadersAdapter<VH extends RecyclerView.ViewHolder> {
+...
+  int getNumColumns();//<--returns 1
+
+  int getSpanSize(int position);//<--returns 1
+}
+```
 
 Usage
 -----
@@ -34,13 +51,17 @@ There interface looks like this:
 
 ```java
 public interface StickyRecyclerHeadersAdapter<VH extends RecyclerView.ViewHolder> {
-  public long getHeaderId(int position);
+  long getHeaderId(int position);
 
-  public VH onCreateHeaderViewHolder(ViewGroup parent);
+  VH onCreateHeaderViewHolder(ViewGroup parent);
 
-  public void onBindHeaderViewHolder(VH holder, int position);
+  void onBindHeaderViewHolder(VH holder, int position);
 
-  public int getItemCount();
+  int getItemCount();
+
+  int getNumColumns();//1 if you only want one column
+
+  int getSpanSize(int position);//1 if you only want one column
 }
 ```
 
@@ -110,27 +131,3 @@ Known Issues
 * I haven't tested this with ItemAnimators yet.
 
 * The header views are drawn to a canvas, and are not actually a part of the view hierarchy. As such, they can't have touch states, and you may run into issues if you try to load images into them asynchronously.
-
-Version History
----------------
-0.4.3 (12/24/2015) - Change minSDK to 11, fix issue with header bounds caching
-
-0.4.2 (8/21/2015) - Add support for reverse `ReverseLayout` in `LinearLayoutManager` by [AntonPukhonin](https://github.com/AntonPukhonin)
-
-0.4.1 (6/24/2015) - Fix "dancing headers" by DarkJaguar91
-
-0.4.0 (4/16/2015) - Code reorganization by danoz73, fixes for different sized headers, performance improvements
-
-0.3.6 (1/30/2015) - Prevent header clicks from passing on the touch event
-
-0.3.5 (12/12/2014) - Add StickyRecyclerHeadersDecoration.invalidateHeaders() method
-
-0.3.4 (12/3/2014) - Fix issues with rendering of header views with header ID = 0
-
-0.3.3 (11/13/2014) - Fixes for padding, support views without headers
-
-0.3.2 (11/1/2014) - Bug fixes for list items with margins and deleting items
-
-0.2 (10/3/2014) - Add StickyRecyclerHeadersTouchListener
-
-0.1 (10/2/2014) - Initial Release
